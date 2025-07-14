@@ -1,7 +1,5 @@
 <template>
   <div class="flex flex-right column">
-    <!-- SEÇÃO: Você -->
-    <!-- {{ currentUser }} -->
     <q-item v-if="currentUser" clickable @click="selectUser(currentUser)">
       <q-item-section avatar>
         <q-avatar>
@@ -23,7 +21,6 @@
     <div class="flex flex-right flex-center text-center text-grey-7">Amigos</div>
     <template v-if="users.length > 0">
       <q-item v-for="user in users" :key="user.id" clickable @click="selectUser(user)">
-        <!-- {{ user }} -->
         <q-item-section avatar>
           <q-avatar>
             <img :src="user.avatar || avatarUrl(user)" />
@@ -31,7 +28,7 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label>{{ avatarName(user) }}</q-item-label>
+          <q-item-label>{{ user.username }}</q-item-label>
           <q-item-label caption>
             <q-icon :color="user.is_online ? 'green' : 'grey'" name="circle" size="10px" />
             {{ user.is_online ? 'Online' : 'Offline' }}
@@ -59,14 +56,6 @@ const currentUser = computed(() =>
   auth.username ? userStore.users.find((u) => u.username === auth.username) : null,
 )
 const auth = useAuthStore()
-
-function avatarName(user) {
-  // if (user.username === auth.username) {
-  // return `${user.username} | Eu`
-  // } else {
-  return user.username
-  // }
-}
 
 function avatarUrl(user) {
   const nameEncoded = encodeURIComponent(user.username)
