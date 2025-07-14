@@ -14,7 +14,7 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <!-- <q-list> -->
-      <q-item-label header> Amigos </q-item-label>
+      <!-- <q-item-label header> Amigos </q-item-label> -->
       <UserList />
       <!-- </q-list> -->
     </q-drawer>

@@ -1,5 +1,25 @@
 <template>
   <div class="flex flex-right column">
+    <!-- SEÇÃO: Você -->
+    <q-item clickable @click="selectUser(currentUser)">
+      <q-item-section avatar>
+        <q-avatar>
+          <img :src="currentUser.avatar || avatarUrl(currentUser)" />
+        </q-avatar>
+      </q-item-section>
+
+      <q-item-section>
+        <q-item-label>{{ currentUser.username }} | Eu</q-item-label>
+        <q-item-label caption>
+          <q-icon :color="currentUser.is_online ? 'green' : 'grey'" name="circle" size="10px" />
+          {{ currentUser.is_online ? 'Online' : 'Offline' }}
+        </q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-separator spaced inset />
+
+    <div class="flex flex-right flex-center text-center text-grey-7">Amigos</div>
     <template v-if="users.length > 0">
       <q-item v-for="user in users" :key="user.id" clickable @click="selectUser(user)">
         <q-item-section avatar>
@@ -32,7 +52,8 @@ import { useAuthStore } from 'src/stores/auth'
 import { useUserStore } from 'src/stores/user'
 
 const userStore = useUserStore()
-const users = computed(() => userStore.users)
+const users = computed(() => userStore.users.filter((u) => u.username !== auth.username))
+const currentUser = computed(() => userStore.users.find((u) => u.username === auth.username))
 const auth = useAuthStore()
 
 function avatarName(user) {
