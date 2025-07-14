@@ -1,15 +1,49 @@
 import { defineBoot } from '#q-app/wrappers'
 import axios from 'axios'
+import { useAuthStore } from 'src/stores/auth'
+import { useRouter } from 'vue-router'
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
 const url = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001/api/'
 const api = axios.create({ baseURL: url })
 
+api.interceptors.request.use((config) => {
+  const auth = useAuthStore()
+  if (auth.accessToken) {
+    config.headers.Authorization = `Bearer ${auth.accessToken}`
+  }
+  return config
+})
+
+api.interceptors.response.use(
+  (response) => response,
+  async (err) => {
+    const originalRequest = err.config
+    const auth = useAuthStore()
+
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      try {
+        const response = await axios.post(url + 'auth/refresh/', {
+          refresh: auth.refresh,
+        })
+
+        auth.accessToken = response.data.access
+        originalRequest.headers.Authorization = `Bearer ${auth.accessToken}`
+
+        return api(originalRequest)
+      } catch (err) {
+        auth.clearTokens()
+        const router = useRouter()
+        router.push('/login')
+
+        return Promise.reject(err)
+      }
+    }
+
+    return Promise.reject(err)
+  },
+)
 export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 

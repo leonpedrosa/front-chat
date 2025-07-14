@@ -1,7 +1,6 @@
 <template>
-  <div class="flex flex-center">Aqui vai o menu lateral</div>
+  <div class="flex flex-center">Message input</div>
 </template>
-
 <script setup></script>
 
 <style></style>
