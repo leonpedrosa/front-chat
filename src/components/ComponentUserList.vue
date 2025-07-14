@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-right column">
     <!-- SEÇÃO: Você -->
-    <q-item clickable @click="selectUser(currentUser)">
+    <!-- {{ currentUser }} -->
+    <q-item v-if="currentUser" clickable @click="selectUser(currentUser)">
       <q-item-section avatar>
         <q-avatar>
           <img :src="currentUser.avatar || avatarUrl(currentUser)" />
@@ -22,6 +23,7 @@
     <div class="flex flex-right flex-center text-center text-grey-7">Amigos</div>
     <template v-if="users.length > 0">
       <q-item v-for="user in users" :key="user.id" clickable @click="selectUser(user)">
+        <!-- {{ user }} -->
         <q-item-section avatar>
           <q-avatar>
             <img :src="user.avatar || avatarUrl(user)" />
@@ -53,15 +55,17 @@ import { useUserStore } from 'src/stores/user'
 
 const userStore = useUserStore()
 const users = computed(() => userStore.users.filter((u) => u.username !== auth.username))
-const currentUser = computed(() => userStore.users.find((u) => u.username === auth.username))
+const currentUser = computed(() =>
+  auth.username ? userStore.users.find((u) => u.username === auth.username) : null,
+)
 const auth = useAuthStore()
 
 function avatarName(user) {
-  if (user.username === auth.username) {
-    return `${user.username} | Eu`
-  } else {
-    return user.username
-  }
+  // if (user.username === auth.username) {
+  // return `${user.username} | Eu`
+  // } else {
+  return user.username
+  // }
 }
 
 function avatarUrl(user) {
